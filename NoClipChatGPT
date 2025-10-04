@@ -1,0 +1,92 @@
+-- LocalScript en StarterPlayerScripts
+local player = game.Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local noclipActivo = false
+local minimizado = false
+
+-- Crear GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "NoClipGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 180, 0, 90)
+mainFrame.Position = UDim2.new(0, 20, 0, 200)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+title.BorderSizePixel = 0
+title.Text = "NoClip Menu"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.SourceSansBold
+title.TextSize = 18
+title.Parent = mainFrame
+
+local toggleBtn = Instance.new("TextButton")
+toggleBtn.Size = UDim2.new(0, 160, 0, 30)
+toggleBtn.Position = UDim2.new(0, 10, 0, 40)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+toggleBtn.Text = "Activar NoClip"
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.Font = Enum.Font.SourceSans
+toggleBtn.TextSize = 16
+toggleBtn.Parent = mainFrame
+
+local minimizeBtn = Instance.new("TextButton")
+minimizeBtn.Size = UDim2.new(0, 25, 0, 25)
+minimizeBtn.Position = UDim2.new(1, -30, 0, 3)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(200, 80, 80)
+minimizeBtn.Text = "-"
+minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+minimizeBtn.Font = Enum.Font.SourceSansBold
+minimizeBtn.TextSize = 16
+minimizeBtn.Parent = mainFrame
+
+-- Función Noclip
+local function setNoClip(state)
+    noclipActivo = state
+    if noclipActivo then
+        toggleBtn.Text = "Desactivar NoClip"
+        toggleBtn.BackgroundColor3 = Color3.fromRGB(80, 150, 80)
+    else
+        toggleBtn.Text = "Activar NoClip"
+        toggleBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    end
+end
+
+-- Botón activar/desactivar
+toggleBtn.MouseButton1Click:Connect(function()
+    setNoClip(not noclipActivo)
+end)
+
+-- Botón minimizar
+minimizeBtn.MouseButton1Click:Connect(function()
+    minimizado = not minimizado
+    if minimizado then
+        mainFrame.Size = UDim2.new(0, 180, 0, 30)
+        toggleBtn.Visible = false
+        minimizeBtn.Text = "+"
+    else
+        mainFrame.Size = UDim2.new(0, 180, 0, 90)
+        toggleBtn.Visible = true
+        minimizeBtn.Text = "-"
+    end
+end)
+
+-- Loop NoClip
+RunService.Stepped:Connect(function()
+    if noclipActivo and player.Character and player.Character:FindFirstChild("Humanoid") then
+        for _, part in pairs(player.Character:GetDescendants()) do
+            if part:IsA("BasePart") and part.CanCollide == true then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
